@@ -2,41 +2,48 @@ package com.example;
 
 public class Calculator {
 
-    // Code Smell: Long method + high complexity
-    // EVEN WORSE: longer, more complex, duplicated logic
     public int calculate(int a, int b, String op) {
-        if (op.equals("add")) {
-            return a + b;
-        } else if (op.equals("add-again")) {
-            return a + b; // DUPLICATION
-        } else if (op.equals("sub")) {
-            return a - b;
-        } else if (op.equals("sub-again")) {
-            return a - b; // DUPLICATION
-        } else if (op.equals("mul")) {
-            return a * b;
-        } else if (op.equals("div")) {
-            if (b == 0) {
-                return 0;
-            } else {
-                return a / b;
-            }
-        } else if (op.equals("mod")) {
-            return a % b;
-        } else if (op.equals("pow")) {
-            int result = 1;
-            for (int i = 0; i < b; i++) {
-                result = result * a;
-            }
-            return result;
-        } else {
-            return 0;
+        if (op == null) {
+            throw new IllegalArgumentException("Operator cannot be null");
+        }
+
+        switch (op) {
+            case "add":
+                return add(a, b);
+            case "sub":
+                return a - b;
+            case "mul":
+                return a * b;
+            case "div":
+                return divide(a, b);
+            case "mod":
+                return a % b;
+            case "pow":
+                return pow(a, b);
+            default:
+                throw new IllegalArgumentException("Unsupported operator: " + op);
         }
     }
 
-    // INTENTIONAL DUPLICATION
-    public int addAgain(int a, int b) {
-        return a + b;
+    public int add(int x, int y) {
+        return x + y;
     }
 
+    private int divide(int a, int b) {
+        if (b == 0) {
+            throw new IllegalArgumentException("Division by zero");
+        }
+        return a / b;
+    }
+
+    private int pow(int a, int b) {
+        if (b < 0) {
+            throw new IllegalArgumentException("Exponent must be non-negative");
+        }
+        int result = 1;
+        for (int i = 0; i < b; i++) {
+            result *= a;
+        }
+        return result;
+    }
 }
