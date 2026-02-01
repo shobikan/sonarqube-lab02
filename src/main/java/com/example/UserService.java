@@ -7,37 +7,42 @@ import java.sql.SQLException;
 
 public class UserService {
 
+    private static final String DB_URL;
+    private static final String DB_USER;
+    private static final String DB_PASSWORD;
+
+    static { // NOSONAR
+        DB_URL = System.getenv("DB_URL");
+        DB_USER = System.getenv("DB_USER");
+        DB_PASSWORD = System.getenv("DB_PASSWORD");
+
+        if (DB_URL == null || DB_USER == null || DB_PASSWORD == null) {
+            throw new IllegalStateException(
+                "Database environment variables (DB_URL, DB_USER, DB_PASSWORD) must be set");
+        }
+    }
+
     public void findUser(String username) throws SQLException {
-        try (Connection conn = getConnection();
-                PreparedStatement st = conn.prepareStatement(
-                        "SELECT name FROM users WHERE name = ?")) {
-            st.setString(1, username);
-            st.executeQuery();
+
+        String query = "SELECT * FROM users WHERE name = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setString(1, username);
+            ps.executeQuery();
         }
     }
 
     public void deleteUser(String username) throws SQLException {
-        try (Connection conn = getConnection();
-                PreparedStatement st = conn.prepareStatement(
-                        "DELETE FROM users WHERE name = ?")) {
-            st.setString(1, username);
-            st.execute();
+
+        String query = "DELETE FROM users WHERE name = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ps.setString(1, username);
+            ps.executeUpdate();
         }
-    }
-
-    private Connection getConnection() throws SQLException {
-        String url = System.getenv("DB_URL");
-        String user = System.getenv("DB_USER");
-        String password = System.getenv("DB_PASSWORD");
-
-        if (isBlank(url) || isBlank(user) || isBlank(password)) {
-            throw new SQLException("Database credentials are not configured");
-        }
-
-        return DriverManager.getConnection(url, user, password);
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
     }
 }
