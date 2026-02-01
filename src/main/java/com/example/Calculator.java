@@ -1,4 +1,4 @@
-package main.java.com.example;
+package com.example;
 
 public class Calculator {
 
@@ -34,9 +34,9 @@ public class Calculator {
         }
     }
 
-}
-
     // INTENTIONAL DUPLICATION
-public int addAgain(int a, int b) {
-return a + b;
+    public int addAgain(int a, int b) {
+        return a + b;
+    }
+
 }
